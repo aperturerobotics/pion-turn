@@ -5,7 +5,6 @@
 package turn
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -169,23 +168,11 @@ func (s *Server) readListener(l net.Listener, am *allocation.Manager) {
 		}
 
 		go func() {
-			var tlsConnectionState *tls.ConnectionState
+			tlsConnectionState, err := connectionTLSState(conn)
+			if err != nil {
+				s.log.Errorf("TLS handshake failed: %s", err)
 
-			// Extract tls connection state if possible
-			tlsConn, ok := conn.(*tls.Conn)
-			if ok {
-				// Force TLS handshake to complete before extracting connection state.
-				// Per crypto/tls docs: handshakes are lazy (complete on first I/O).
-				// We must call Handshake() explicitly to populate PeerCertificates.
-				ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-				defer cancel()
-				if err := tlsConn.HandshakeContext(ctx); err != nil {
-					s.log.Errorf("TLS handshake failed: %s", err)
-
-					return
-				}
-				cs := tlsConn.ConnectionState()
-				tlsConnectionState = &cs
+				return
 			}
 
 			s.readLoop(NewSTUNConn(conn), am, tlsConnectionState)

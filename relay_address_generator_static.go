@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/pion/transport/v4"
-	"github.com/pion/transport/v4/reuseport"
 	"github.com/pion/transport/v4/stdnet"
 )
 
@@ -84,11 +83,7 @@ func (r *RelayAddressGeneratorStatic) AllocateListener(conf AllocateListenerConf
 		return nil, nil, err
 	}
 
-	listenConfig := r.Net.CreateListenConfig(&net.ListenConfig{
-		// Enable SO_REUSEADDR and SO_REUSEPORT where needed to let multiple connnections
-		// bind to the same relay address.
-		Control: reuseport.Control,
-	})
+	listenConfig := relayListenConfig(r.Net)
 	ln, err := listenConfig.Listen(context.TODO(), conf.Network, tcpAddr.String())
 	if err != nil {
 		return nil, nil, err
@@ -109,12 +104,7 @@ func (r *RelayAddressGeneratorStatic) AllocateListener(conf AllocateListenerConf
 
 // AllocateConn creates a new outgoing TCP connection bound to the relay address to send traffic to a peer.
 func (r *RelayAddressGeneratorStatic) AllocateConn(conf AllocateConnConfig) (net.Conn, error) {
-	dialer := r.Net.CreateDialer(&net.Dialer{
-		LocalAddr: conf.LocalAddr,
-		// Enable SO_REUSEADDR and SO_REUSEPORT where needed to let multiple connnections
-		// bind to the same relay address.
-		Control: reuseport.Control,
-	})
+	dialer := relayDialer(r.Net, conf.LocalAddr)
 
 	return dialer.Dial(conf.Network, conf.RemoteAddr.String())
 }
