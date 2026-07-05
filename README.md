@@ -13,7 +13,6 @@
   <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/pion/turn/test.yaml">
   <a href="https://pkg.go.dev/github.com/pion/turn/v5"><img src="https://pkg.go.dev/badge/github.com/pion/turn/v5.svg" alt="Go Reference"></a>
   <a href="https://codecov.io/gh/pion/turn"><img src="https://codecov.io/gh/pion/turn/branch/master/graph/badge.svg" alt="Coverage Status"></a>
-  <a href="https://goreportcard.com/report/github.com/pion/turn/v5"><img src="https://goreportcard.com/badge/github.com/pion/turn/v5" alt="Go Report Card"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 <br>
